@@ -11,11 +11,19 @@ app.get("/", function (request, response) {
 app.get("/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
   // FILL IN YOUR CODE HERE
+  try {
+    const todos = await Todo.findAll({ order: [["id", "ASC"]] });
+    return response.json(todos);
+  } catch (error) {
+    console.log(error);
+    return response.status(422).json(error);
+  }
 
   // First, we have to query our PostgerSQL database using Sequelize to get list of all Todos.
   // Then, we have to respond with all Todos, like:
   // response.send(todos)
 });
+
 
 app.get("/todos/:id", async function (request, response) {
   try {
@@ -53,8 +61,10 @@ app.delete("/todos/:id", async function (request, response) {
   // FILL IN YOUR CODE HERE
 
   // First, we have to query our database to delete a Todo by ID.
+  const affectedRow = await Todo.destroy({ where: { id: request.params.id } });
   // Then, we have to respond back with true/false based on whether the Todo was deleted or not.
   // response.send(true)
+  response.send(affectedRow ? true : false);
 });
 
 module.exports = app;
