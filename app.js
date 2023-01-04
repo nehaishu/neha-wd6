@@ -5,13 +5,22 @@ const bodyParser = require("body-parser");
 const path = require("path")
 
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.set("view engine","ejs")
 app.get("/", async (request,response) => {
   const allTodos = await Todo.getTodo();
+  const overdue = await Todo.overDue();
+  const dueLater = await Todo.dueLater();
+  const dueToday = await Todo.dueToday();
+
   if(request.accepts("html")) {
     response.render('index', {
-      allTodos
+      allTodos,
+      overdue,
+      dueLater,
+      dueToday,
+
     });
   } else{
     response.json({
@@ -55,8 +64,14 @@ app.get("/todos/:id", async function (request, response) {
 
 app.post("/todos", async function (request, response) {
   try {
-    const todo = await Todo.addTodo(request.body);
-    return response.json(todo);
+    //const todo = 
+    await Todo.addTodo({
+      title: request.body.title,
+      dueDate: request.body.dueDate,
+    });
+   // return response.json(todo);
+   return response.redirect("/");
+
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
@@ -76,18 +91,16 @@ app.put("/todos/:id/markAsCompleted", async function (request, response) {
 
 // eslint-disable-next-line no-unused-vars
 app.delete("/todos/:id", async function (request, response) {
-    try{
   console.log("We have to delete a Todo with ID: ", request.params.id);
   // FILL IN YOUR CODE HERE
-  const todo = await Todo.destroy({
-    where: {
-      id: request.params.id,
-    },
-  });
-  response.send(todo ? true : false);
-} catch(error) {
-  console.log(error);
-  return response.status(422).json(error);
+  const todo = await Todo.findByPk(request.params.id);
+  try {
+    //const deletedTodo =
+    await todo.destroy();
+    return response.send(true);
+  } catch (error) {
+    console.log(error);
+    return response.send(false);
 }
   // First, we have to query our database to delete a Todo by ID.
   // Then, we have to respond back with true/false based on whether the Todo was deleted or not.
