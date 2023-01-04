@@ -21,9 +21,9 @@ app.get("/", async (request,response) => {
   
 });
 
-app.get("/", function (request, response) {
-  response.send("Hello World");
-});
+// app.get("/", function (request, response) {
+//   response.send("Hello World");
+// });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
