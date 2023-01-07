@@ -12,13 +12,15 @@ module.exports = (sequelize, DataTypes) => {
       Todo.belongsTo(models.User, {
         foreignKey: "userId",
       });
-
     }
 
-    static addTodo({ title, dueDate ,userId}) {
-      return this.create({ title: title, dueDate: dueDate, completed: false ,
-      userId
-    });
+    static addTodo({ title, dueDate, userId }) {
+      return this.create({
+        title: title,
+        dueDate: dueDate,
+        completed: false,
+        userId,
+      });
     }
 
     static getTodos() {
@@ -45,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
           completed: false,
           userId,
         },
+
         order: [["id", "ASC"]],
       });
     }
@@ -55,19 +58,20 @@ module.exports = (sequelize, DataTypes) => {
           completed: false,
           userId,
         },
+
         order: [["id", "ASC"]],
       });
     }
 
     static async completedTodos(userId) {
       return await Todo.findAll({
-        where: { 
+        where: {
           completed: true,
           userId,
-         },
+        },
       });
     }
-    static async remove(id,userId) {
+    static async remove(id, userId) {
       return this.destroy({
         where: {
           id,
